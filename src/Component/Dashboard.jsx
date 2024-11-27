@@ -7,8 +7,6 @@ const ComplaintSymptomsStep = ({
   comments,
   setComments,
   handleRemoveComplaint,
-  handlePrevious,
-  handleNext,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempSelectedComplaints, setTempSelectedComplaints] = useState([...selectedComplaints]);
@@ -22,7 +20,7 @@ const ComplaintSymptomsStep = ({
   };
 
   const handleSaveComplaints = () => {
-    setSelectedComplaints(tempSelectedComplaints); 
+    setSelectedComplaints(tempSelectedComplaints);
     setIsModalOpen(false);
   };
 
@@ -81,29 +79,7 @@ const ComplaintSymptomsStep = ({
           </p>
         )}
       </div>
-
-      <div className="flex justify-between">
-        <button
-          type="button"
-          className={`bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded ${
-            handlePrevious ? '' : 'opacity-50 cursor-not-allowed'
-          }`}
-          onClick={handlePrevious}
-          disabled={!handlePrevious}
-        >
-          Previous
-        </button>
-        <button
-          type="button"
-          className={`bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded ${
-            comments.trim() === '' || selectedComplaints.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={comments.trim() === '' || selectedComplaints.length === 0}
-          onClick={handleNext}
-        >
-          Next
-        </button>
-      </div>
+     
 
       {isModalOpen && (
         <Modal
@@ -118,3 +94,4 @@ const ComplaintSymptomsStep = ({
 };
 
 export default ComplaintSymptomsStep;
+
