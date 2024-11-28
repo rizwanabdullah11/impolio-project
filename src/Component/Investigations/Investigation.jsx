@@ -1,60 +1,208 @@
 import React, { useState } from 'react';
+import LabTestModal from './Modal/labModal';
+import RapidTestModal from './Modal/testModal';
 
 const Investigations = () => {
-  const [labTests, setLabTests] = useState([]); 
-  const [rapidTests, setRapidTests] = useState([]); 
-  const [notes, setNotes] = useState(''); 
+  const [labTests, setLabTests] = useState([]);
+  const [rapidTests, setRapidTests] = useState([]);
+  const [notes, setNotes] = useState('');
+  const [isLabModalOpen, setIsLabModalOpen] = useState(false);
+  const [selectedLabTests, setSelectedLabTests] = useState([]);
+  const [isRapidModalOpen, setIsRapidModalOpen] = useState(false);
+  const [selectedRapidTests, setSelectedRapidTests] = useState([]);
+  const [rapidTestStatuses, setRapidTestStatuses] = useState({});
+  const [rapidTestImages, setRapidTestImages] = useState({});
 
   const handleAddLabTests = () => {
-    const test = prompt("Enter the name of the lab test:");
-    if (test) setLabTests([...labTests, test]);
+    setIsLabModalOpen(true);
+  };
+
+  const handleLabTestsSave = (newSelectedLabTests) => {
+    setLabTests(newSelectedLabTests);
+    setSelectedLabTests(newSelectedLabTests);
+    setIsLabModalOpen(false);
+  };
+
+  const handleRemoveLabTest = (test) => {
+    setLabTests(labTests.filter((t) => t !== test));
   };
 
   const handleAddRapidTests = () => {
-    const test = prompt("Enter the name of the rapid test:");
-    if (test) setRapidTests([...rapidTests, test]);
+    setIsRapidModalOpen(true);
+  };
+
+  const handleRapidTestsSave = (newSelectedRapidTests) => {
+    setRapidTests(newSelectedRapidTests);
+    setSelectedRapidTests(newSelectedRapidTests);
+    setIsRapidModalOpen(false);
+  };
+
+  const handleRemoveRapidTest = (test) => {
+    setRapidTests(rapidTests.filter((t) => t !== test));
+    const updatedStatuses = { ...rapidTestStatuses };
+    delete updatedStatuses[test];
+    setRapidTestStatuses(updatedStatuses);
+
+    const updatedImages = { ...rapidTestImages };
+    delete updatedImages[test];
+    setRapidTestImages(updatedImages);
+  };
+
+  const handleStatusChange = (test, status) => {
+    setRapidTestStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [test]: status,
+    }));
+  };
+
+  const handleImageUpload = (test, file) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRapidTestImages((prevImages) => ({
+          ...prevImages,
+          [test]: reader.result, 
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
-    <div className="w-3/4 mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-6 text-left">Investigations</h2>
-      
-      <div className="flex justify-between mb-4">
+    <div className="w-3/4 mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-xl font-bold mb-2 text-left">Investigations</h2>
+
+      <div className="flex justify-between mb-2">
         <button
           type="button"
-          className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-full"
           onClick={handleAddLabTests}
         >
           Add Lab Tests
         </button>
+
+        <LabTestModal
+          isOpen={isLabModalOpen}
+          onClose={() => {
+            setIsLabModalOpen(false);
+            setSelectedLabTests([]);
+          }}
+          onSave={handleLabTestsSave}
+          labList={['Kyra Holder', 'Britanney Spencer']}
+          selectedLabTests={selectedLabTests}
+          setSelectedLabTests={setSelectedLabTests}
+        />
+
         <button
           type="button"
-          className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-full"
           onClick={handleAddRapidTests}
         >
           Add Rapid Tests
         </button>
+
+        <RapidTestModal
+          isOpen={isRapidModalOpen}
+          onClose={() => {
+            setIsRapidModalOpen(false);
+            setSelectedRapidTests([]);
+          }}
+          onSave={handleRapidTestsSave}
+          rapidList={['Malaria', 'HIV', 'Test']}
+          selectedRapidTests={selectedRapidTests}
+          setSelectedRapidTests={setSelectedRapidTests}
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-4 mb-2">
         <div className="bg-gray-100 p-4 rounded">
-          <h3 className="font-bold mb-2">Selected Lab Tests:</h3>
+          <h3 className="font-bold mb-2 text-left">Selected Lab Tests:</h3>
           {labTests.length > 0 ? (
             <ul className="list-disc list-inside">
               {labTests.map((test, index) => (
-                <li key={index}>{test}</li>
+                <li key={index} className="flex items-center justify-between space-x-2">
+                  <span>{test}</span>
+                  <input
+                    type="number"
+                    className="border border-gray-300 rounded py-1 px-2 focus:outline-none focus:ring focus:border-purple-500"
+                  />
+                  <button
+                    type="button"
+                    className="text-white font-bold p-2 rounded-full bg-red-500 border-2 border-white hover:bg-red-600 hover:text-white"
+                    onClick={() => handleRemoveLabTest(test)}
+                  >
+                    Remove
+                  </button>
+                </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">No lab tests selected.</p>
+            <p className="text-gray-500 text-left">No lab tests selected.</p>
           )}
         </div>
         <div className="bg-gray-100 p-4 rounded">
-          <h3 className="font-bold mb-2">Selected Rapid Tests:</h3>
+          <h3 className="font-bold mb-2 text-left">Selected Rapid Tests:</h3>
           {rapidTests.length > 0 ? (
             <ul className="list-disc list-inside">
               {rapidTests.map((test, index) => (
-                <li key={index}>{test}</li>
+                <li key={index} className="flex flex-col space-y-2">
+                  <div className="flex items-center">
+                    <span>{test}</span>
+                    <button
+                      type="button"
+                      className="text-white font-bold p-2 rounded-full ml-56 bg-red-500 border-2 border-white hover:bg-red-600 hover:text-white"
+                      onClick={() => document.getElementById(`attach-image-${test}`).click()}
+                    >
+                      Attach Images
+                    </button>
+                    <input
+                      type="file"
+                      id={`attach-image-${test}`}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleImageUpload(test, e.target.files[0])}
+                    />
+                    <button
+                      type="button"
+                      className="text-white font-bold p-2 rounded-full bg-red-500 border-2 border-white hover:bg-red-600 hover:text-white"
+                      onClick={() => handleRemoveRapidTest(test)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`status-${test}`}
+                      className="block text-lg text-left"
+                    >
+                      Status:
+                    </label>
+                    <select
+                      id={`status-${test}`}
+                      value={rapidTestStatuses[test] || ''}
+                      onChange={(e) => handleStatusChange(test, e.target.value)}
+                      className="border-gray-300 rounded p-2 w-full"
+                    >
+                      <option value="">Select status</option>
+                      <option value="POSITIVE">POSITIVE</option>
+                      <option value="NEGATIVE">NEGATIVE</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-bold text-left">
+                      Selected Images:
+                    </label>
+                    {rapidTestImages[test] && (
+                      <div className="mt-2">
+                        <img
+                          src={rapidTestImages[test]}
+                          alt="Uploaded"
+                          className="w-32 h-32 object-cover rounded"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </li>
               ))}
             </ul>
           ) : (
@@ -62,13 +210,13 @@ const Investigations = () => {
           )}
         </div>
       </div>
-
-      {/* Notes Section */}
       <div>
-        <label htmlFor="notes" className="block font-medium mb-2 text-left">Notes:</label>
+        <label htmlFor="notes" className="block font-medium text-left">
+          Notes:
+        </label>
         <textarea
           id="notes"
-          rows="4"
+          rows="2"
           className="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500"
           placeholder="Add your notes here..."
           value={notes}
@@ -80,3 +228,5 @@ const Investigations = () => {
 };
 
 export default Investigations;
+
+

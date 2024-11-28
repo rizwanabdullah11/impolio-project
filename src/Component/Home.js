@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import AppointmentHeader from './Navbar';
-import ComplaintSymptomsStep from './Dashboard';
+import ComplaintSymptomsStep from './Complaints/Complaint';
 import ExaminationsStep from './Examinations/Examination';
 import InvestigationsStep from './Investigations/Investigation';
-import DiagnosisStep from './Diagnosis';
-import PlanStep from './Plan';
+import DiagnosisStep from './Diagnosis/Diagnosis';
+import PlanStep from './Plans/Plan';
 import Next from './next';
 
 const AppointmentWorkflow = () => {
   const [selectedComplaints, setSelectedComplaints] = useState([]);
+  const [selectedExamination, setSelectedExamination] = useState([]);
+  const [selectedInvestigations, setSelectedInvestigations] = useState([]); 
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState([]);
   const [comments, setComments] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -50,9 +53,38 @@ const AppointmentWorkflow = () => {
             handleNext={handleNext}
           />
         )}
-        {currentStep === 1 && <ExaminationsStep />}
-        {currentStep === 2 && <InvestigationsStep />}
-        {currentStep === 3 && <DiagnosisStep />}
+        {currentStep === 1 && <ExaminationsStep 
+            currentStep={currentStep}
+            setSelectedExamination={setSelectedExamination}
+            selectedExamination={selectedExamination}
+            comments={comments}
+            setComments={setComments}
+            handlePrevious={handlePrevious}
+            handleNext={handleNext}
+        />}
+        {currentStep === 2 && (
+          <InvestigationsStep
+            currentStep={currentStep}
+            selectedInvestigations={selectedInvestigations}
+            setSelectedInvestigations={setSelectedInvestigations}
+            handlePrevious={handlePrevious}
+            handleNext={handleNext}
+          />
+        )}
+        {currentStep === 3 && (
+          <DiagnosisStep
+            currentStep={currentStep}
+            setSelectedDiagnosis={setSelectedDiagnosis}
+            selectedDiagnosis={selectedDiagnosis}
+            comments={comments}
+            setComments={setComments}
+            handleRemoveDiagnosis={(Diagnosis) =>
+              setSelectedDiagnosis(selectedDiagnosis.filter((c) => c !== Diagnosis))
+            }
+            handlePrevious={handlePrevious}
+            handleNext={handleNext}
+          />
+        )}
         {currentStep === 4 && <PlanStep />}
       </div>
 
@@ -63,6 +95,8 @@ const AppointmentWorkflow = () => {
             handleNext={handleNext}
             comments={comments}
             selectedComplaints={selectedComplaints}
+            selectedInvestigations={selectedInvestigations}
+            selectedDiagnosis={selectedDiagnosis}
           />
         </div>
       </div>
