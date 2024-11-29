@@ -3,7 +3,7 @@ import React from 'react';
 const AppointmentHeader = ({ steps, currentStep, handleStepClick }) => {
   return (
     <div className="container mx-auto py-2">
-      <h1 className="text-4xl font-bold mb-6">Add Appointment</h1>
+      <h1 className="text-4xl font-bold mb-3">Add Appointment</h1>
       <div className="flex justify-center space-x-8">
         {steps.map((step, index) => (
           <div

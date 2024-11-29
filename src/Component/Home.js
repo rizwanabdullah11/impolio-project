@@ -12,8 +12,12 @@ const AppointmentWorkflow = () => {
   const [selectedExamination, setSelectedExamination] = useState([]);
   const [selectedInvestigations, setSelectedInvestigations] = useState([]); 
   const [selectedDiagnosis, setSelectedDiagnosis] = useState([]);
-  const [comments, setComments] = useState('');
+  const [complaintComments, setComplaintComments] = useState('');
+  const [examinationComments, setExaminationComments] = useState('');
+  const [investigationNotes, setInvestigationNotes] = useState('');
+  const [diagnosisComments, setDiagnosisComments] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
+  const [showValidation, setShowValidation] = useState(false);
 
   const steps = [
     { label: 'Complaint & Symptoms' },
@@ -24,15 +28,35 @@ const AppointmentWorkflow = () => {
   ];
 
   const handlePrevious = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      setShowValidation(false);
+    }
   };
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1);
+    setShowValidation(true);
+    if (currentStep === 0 && (complaintComments.trim() === '' || selectedComplaints.length === 0)) {
+      return;
+    }
+    if (currentStep === 1 && (examinationComments.trim() === '' || selectedExamination.length === 0)) {
+      return;
+    }
+    if (currentStep === 2 && (investigationNotes.trim() === '' || selectedInvestigations.length === 0)) {
+      return;
+    }
+    if (currentStep === 3 && (diagnosisComments.trim() === '' || selectedDiagnosis.length === 0)) {
+      return;
+    }
+    
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+      setShowValidation(false);
+    }
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative h-full">
       <AppointmentHeader
         steps={steps}
         currentStep={currentStep}
@@ -41,60 +65,60 @@ const AppointmentWorkflow = () => {
       <div className="p-6">
         {currentStep === 0 && (
           <ComplaintSymptomsStep
-            currentStep={currentStep}
-            setSelectedComplaints={setSelectedComplaints}
             selectedComplaints={selectedComplaints}
-            comments={comments}
-            setComments={setComments}
+            setSelectedComplaints={setSelectedComplaints}
+            complaintComments={complaintComments}
+            setComplaintComments={setComplaintComments}
+            showValidation={showValidation}
             handleRemoveComplaint={(complaint) =>
               setSelectedComplaints(selectedComplaints.filter((c) => c !== complaint))
             }
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
           />
         )}
-        {currentStep === 1 && <ExaminationsStep 
-            currentStep={currentStep}
-            setSelectedExamination={setSelectedExamination}
+        {currentStep === 1 && (
+          <ExaminationsStep 
             selectedExamination={selectedExamination}
-            comments={comments}
-            setComments={setComments}
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
-        />}
+            setSelectedExamination={setSelectedExamination}
+            examinationComments={examinationComments}
+            setExaminationComments={setExaminationComments}
+            showValidation={showValidation}
+          />
+        )}
         {currentStep === 2 && (
           <InvestigationsStep
-            currentStep={currentStep}
             selectedInvestigations={selectedInvestigations}
             setSelectedInvestigations={setSelectedInvestigations}
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
+            investigationNotes={investigationNotes}
+            setInvestigationNotes={setInvestigationNotes}
+            showValidation={showValidation}  
           />
         )}
         {currentStep === 3 && (
           <DiagnosisStep
-            currentStep={currentStep}
-            setSelectedDiagnosis={setSelectedDiagnosis}
             selectedDiagnosis={selectedDiagnosis}
-            comments={comments}
-            setComments={setComments}
-            handleRemoveDiagnosis={(Diagnosis) =>
-              setSelectedDiagnosis(selectedDiagnosis.filter((c) => c !== Diagnosis))
+            setSelectedDiagnosis={setSelectedDiagnosis}
+            diagnosisComments={diagnosisComments}
+            setDiagnosisComments={setDiagnosisComments}
+            handleRemoveDiagnosis={(diagnosis) =>
+              setSelectedDiagnosis(selectedDiagnosis.filter((d) => d !== diagnosis))
             }
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
           />
         )}
         {currentStep === 4 && <PlanStep />}
       </div>
 
       <div className="fixed w-full">
-        <div className="container ml-60 p-4 flex ">
+        <div className="container ml-60 p-4 flex">
           <Next
             handlePrevious={handlePrevious}
             handleNext={handleNext}
-            comments={comments}
+            currentStep={currentStep}
+            complaintComments={complaintComments}
+            examinationComments={examinationComments}
+            investigationNotes={investigationNotes}
+            diagnosisComments={diagnosisComments}
             selectedComplaints={selectedComplaints}
+            selectedExamination={selectedExamination}
             selectedInvestigations={selectedInvestigations}
             selectedDiagnosis={selectedDiagnosis}
           />
@@ -105,3 +129,5 @@ const AppointmentWorkflow = () => {
 };
 
 export default AppointmentWorkflow;
+
+

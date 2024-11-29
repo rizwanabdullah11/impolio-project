@@ -1,15 +1,16 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "../Component/Home";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import AppointmentWorkflow from '../Component/Home';
+import Appointment from '../Component/Appoitment';
 
 const AppRouter = () => {
-
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<AppointmentWorkflow />} />
+        <Route path="/appointment" element={<Appointment />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 };
 

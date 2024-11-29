@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import LabTestModal from './Modal/labModal';
 import RapidTestModal from './Modal/testModal';
 
-const Investigations = () => {
+const Investigations = ({ 
+  selectedInvestigations, 
+  setSelectedInvestigations,
+  investigationNotes,
+  setInvestigationNotes,
+  showValidation 
+}) => {
   const [labTests, setLabTests] = useState([]);
   const [rapidTests, setRapidTests] = useState([]);
-  const [notes, setNotes] = useState('');
   const [isLabModalOpen, setIsLabModalOpen] = useState(false);
   const [selectedLabTests, setSelectedLabTests] = useState([]);
   const [isRapidModalOpen, setIsRapidModalOpen] = useState(false);
@@ -20,11 +25,14 @@ const Investigations = () => {
   const handleLabTestsSave = (newSelectedLabTests) => {
     setLabTests(newSelectedLabTests);
     setSelectedLabTests(newSelectedLabTests);
+    setSelectedInvestigations([...rapidTests, ...newSelectedLabTests]);
     setIsLabModalOpen(false);
   };
 
   const handleRemoveLabTest = (test) => {
-    setLabTests(labTests.filter((t) => t !== test));
+    const updatedLabTests = labTests.filter((t) => t !== test);
+    setLabTests(updatedLabTests);
+    setSelectedInvestigations([...rapidTests, ...updatedLabTests]);
   };
 
   const handleAddRapidTests = () => {
@@ -34,11 +42,15 @@ const Investigations = () => {
   const handleRapidTestsSave = (newSelectedRapidTests) => {
     setRapidTests(newSelectedRapidTests);
     setSelectedRapidTests(newSelectedRapidTests);
+    setSelectedInvestigations([...labTests, ...newSelectedRapidTests]);
     setIsRapidModalOpen(false);
   };
 
   const handleRemoveRapidTest = (test) => {
-    setRapidTests(rapidTests.filter((t) => t !== test));
+    const updatedRapidTests = rapidTests.filter((t) => t !== test);
+    setRapidTests(updatedRapidTests);
+    setSelectedInvestigations([...labTests, ...updatedRapidTests]);
+    
     const updatedStatuses = { ...rapidTestStatuses };
     delete updatedStatuses[test];
     setRapidTestStatuses(updatedStatuses);
@@ -61,7 +73,7 @@ const Investigations = () => {
       reader.onload = () => {
         setRapidTestImages((prevImages) => ({
           ...prevImages,
-          [test]: reader.result, 
+          [test]: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -69,7 +81,7 @@ const Investigations = () => {
   };
 
   return (
-    <div className="w-3/4 mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="w-3/4 h-fit mx-auto bg-white rounded-lg shadow-md p-2">
       <h2 className="text-xl font-bold mb-2 text-left">Investigations</h2>
 
       <div className="flex justify-between mb-2">
@@ -88,7 +100,7 @@ const Investigations = () => {
             setSelectedLabTests([]);
           }}
           onSave={handleLabTestsSave}
-          labList={['Kyra Holder', 'Britanney Spencer']}
+          labList={['Complete Blood Count', 'Liver Function Test', 'Kidney Function Test', 'Lipid Profile']}
           selectedLabTests={selectedLabTests}
           setSelectedLabTests={setSelectedLabTests}
         />
@@ -217,16 +229,26 @@ const Investigations = () => {
         <textarea
           id="notes"
           rows="2"
-          className="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500"
+          className={`w-full border ${
+            showValidation && investigationNotes?.trim() === '' ? 'border-red-500' : 'border-gray-300'
+          } rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500`}
           placeholder="Add your notes here..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={investigationNotes}
+          onChange={(e) => setInvestigationNotes(e.target.value)}
         />
+        {showValidation && (
+          <div className="mt-2">
+            {investigationNotes?.trim() === '' && (
+              <p className="text-red-500 text-sm text-left">Notes Field Required *</p>
+            )}
+            {selectedInvestigations.length === 0 && (
+              <p className="text-red-500 text-sm text-left">Please select at least one investigation</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default Investigations;
-
-

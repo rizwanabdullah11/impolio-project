@@ -4,8 +4,8 @@ import Modal from './Modal/modal';
 const Diagnosis = ({
   selectedDiagnosis,
   setSelectedDiagnosis,
-  comments,
-  setComments,
+  diagnosisComments,
+  setDiagnosisComments,
   handleRemoveDiagnosis,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,12 +70,12 @@ const Diagnosis = ({
           rows="3"
           className="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500"
           placeholder="Add your notes here..."
-          value={comments}
-          onChange={(e) => setComments(e.target.value)}
+          value={diagnosisComments}
+          onChange={(e) => setDiagnosisComments(e.target.value)}
         ></textarea>
-        {(comments.trim() === '' || selectedDiagnosis.length === 0) && (
+        {(diagnosisComments.trim() === '' || selectedDiagnosis.length === 0) && (
           <p className="text-red-500 text-sm text-left">
-            {comments.trim() === '' ? 'Comments Field Required *' : 'Please select at least one Diagnosis'}
+            {diagnosisComments.trim() === '' ? 'Comments Field Required *' : 'Please select at least one Diagnosis'}
           </p>
         )}
       </div>

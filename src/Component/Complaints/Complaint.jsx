@@ -4,9 +4,10 @@ import Modal from './Modal/modal';
 const ComplaintSymptomsStep = ({
   selectedComplaints,
   setSelectedComplaints,
-  comments,
-  setComments,
+  complaintComments,
+  setComplaintComments,
   handleRemoveComplaint,
+  showValidation
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempSelectedComplaints, setTempSelectedComplaints] = useState([...selectedComplaints]);
@@ -68,18 +69,24 @@ const ComplaintSymptomsStep = ({
         <textarea
           id="comments"
           rows="3"
-          className="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500"
+          className={`w-full border ${
+            showValidation && complaintComments.trim() === '' ? 'border-red-500' : 'border-gray-300'
+          } rounded py-2 px-3 focus:outline-none focus:ring focus:border-purple-500`}
           placeholder="Add your comments here..."
-          value={comments}
-          onChange={(e) => setComments(e.target.value)}
-        ></textarea>
-        {(comments.trim() === '' || selectedComplaints.length === 0) && (
-          <p className="text-red-500 text-sm text-left">
-            {comments.trim() === '' ? 'Comments Field Required *' : 'Please select at least one complaint'}
-          </p>
+          value={complaintComments}
+          onChange={(e) => setComplaintComments(e.target.value)}
+        />
+        {showValidation && (
+          <div className="mt-2">
+            {complaintComments.trim() === '' && (
+              <p className="text-red-500 text-sm text-left">Comments Field Required *</p>
+            )}
+            {selectedComplaints.length === 0 && (
+              <p className="text-red-500 text-sm text-left">Please select at least one complaint</p>
+            )}
+          </div>
         )}
       </div>
-     
 
       {isModalOpen && (
         <Modal
